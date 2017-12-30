@@ -3,7 +3,7 @@ from openpyxl import Workbook
 from openpyxl import load_workbook
 import AuxiliaryFunctions
 import re
-
+from datetime import datetime, timedelta
 
 #TODO: Be able to toggle between Library shifts or helpdesk shifts only or both.
 #load in workbook
@@ -31,13 +31,22 @@ outputWb.save('HumanityScheduleImport.xlsx') #note: this will overwrite existing
 #populate column headers
 outputSheet['A1'] = 'name'
 outputSheet['B1'] = 'position'
-outputSheet['C1'] = '1/1/18' #TODO: automate populating dates based on eventual incorporation of user input
-outputSheet['D1'] = '1/2/18'
-outputSheet['E1'] = '1/3/18'
-outputSheet['F1'] = '1/4/18'
-outputSheet['G1'] = '1/5/18'
-outputSheet['H1'] = '1/6/18'
-outputSheet['I1'] = '1/7/18'
+
+startDate = AuxiliaryFunctions.dateParser(input("When does the term start? (mm/dd/yyyy): ")) #
+
+for col in range(3,10):
+	dateString = startDate.strftime('%m/%d/%y') #get start date as a string
+	outputSheet.cell(row = 1, column = col, value =  dateString)
+	startDate = startDate + timedelta(days=1)
+
+
+# outputSheet['C1'] = '1/1/18' #TODO: automate populating dates based on eventual incorporation of user input
+# outputSheet['D1'] = '1/2/18'
+# outputSheet['E1'] = '1/3/18'
+# outputSheet['F1'] = '1/4/18'
+# outputSheet['G1'] = '1/5/18'
+# outputSheet['H1'] = '1/6/18'
+# outputSheet['I1'] = '1/7/18'
 
 
 #for col in scheduleSheet['A:N']:
@@ -60,6 +69,29 @@ for col in range(1,15): #this corresponds to columns A through N
 					if day > 9:
 						day = 3
 				outputSheet.cell(row = row_count, column = day, value = shiftTime)
+
+#if you want to expand the thing out to the end of term.
+endDate = AuxiliaryFunctions.dateParser(input("When does the term end? (mm/dd/yyyy): ")) #
+col = 9
+lastEnteredDate = datetime.strptime(outputSheet.cell(row = 1, column = col).value, '%m/%d/%y').date()
+maxRow = outputSheet.max_row
+#populates column headers properly
+
+while endDate != lastEnteredDate:
+	col+=1
+	lastEnteredDate = lastEnteredDate + timedelta(days=1)
+	dateString = lastEnteredDate.strftime('%m/%d/%y') #get lastEnteredDate as a string
+	outputSheet.cell(row = 1, column = col, value = dateString) 
+	
+	#copy the original scheduled column over.
+	curRow = 2
+	while curRow <= maxRow:
+		originalCell = outputSheet.cell(row = curRow, column = col-7)
+		newCell = outputSheet.cell(row = curRow, column = col)
+		newCell.value = originalCell.value
+		curRow += 1
+	
+
 
 print ("output saved to HumanityScheduleImport.xlsx")
 outputWb.save('HumanityScheduleImport.xlsx')

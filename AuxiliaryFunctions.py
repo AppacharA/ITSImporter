@@ -1,8 +1,16 @@
 #auxiliary functions for this program
 from math import floor, ceil
-
+import re
+import datetime
 from openpyxl import Workbook
 from openpyxl.utils import coordinate_from_string, column_index_from_string
+
+
+def dateParser(dateString): #input should be a string in format mm/dd/yy or mm-dd-yy
+	values = re.split('\D', dateString, 2) #split string at most twice (into 3 resulting values), based on the decimals. 
+	date = datetime.date(int(values[2]), int(values[0]), int(values[1]))
+	return date
+
 def getStudent(workerList, workerName): 
 	if workerName == "":
 		return
