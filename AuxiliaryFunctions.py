@@ -11,41 +11,26 @@ def dateParser(dateString): #input should be a string in format mm/dd/yy or mm-d
 	date = datetime.date(int(values[2]), int(values[0]), int(values[1]))
 	return date
 
-def getStudent(workerList, workerName): 
-	if workerName == "":
+def getStudent(workerList, workerName): #given the student name in a cell, finds the full name of the worker for Shiftplanning.
+#when called, workerList will be a dictionary of workers (See ScheduleImporter.py, under the section commented "Get List of All Workers")
+	
+	if workerName == "": #Skips blank cells.
 		return
 	else:
-		listofWorkers = dict(workerList) #workerList is a tuple; we're making a dictionary out of it.
-		lastName = listofWorkers.get(workerName)
+		lastName = workerList.get(workerName)
 		firstName = workerName
-		if firstName == "Sophia M." or firstName == "Sophia B.":
+		if firstName == "Sophia M." or firstName == "Sophia B.": #Built in Sophia Processing!
 			firstName = "Sophia"
 		student = firstName + " " + lastName
 		return student
 
-def getDay(col): #returns Day as column number
-	#col = column_index_from_string(column)
-	if col == 1 or col == 2:
-		Day = 'C'
-	elif col == 3 or col == 4:
-		Day = 'D'
-	elif col == 5 or col == 6:
-		Day = 'E1'
-	elif col == 7 or col == 8:
-		Day = 'F1'
-	elif col == 9 or col == 10:
-		Day = 'G1'
-	elif col == 11 or col == 12:
-		Day = 'H1'
-	elif col == 13 or col == 14:
-		Day = 'I1'
+def getDay(col): #returns Day as column number. This might actually be a redundant method but hey, it works!
 
 	Day = ceil(col/2) + 2
 
 	return Day
 
-def getPosition(col):
-	#col = column_index_from_string(column)
+def getPosition(col): #For a given day, if the carltech is in the left column they're at the Helpdesk (CarlTech) and for the right column they're the Library (Libe CarlTech). Modify this code if position names change in the future.
 	if (col%2) != 0:
 		position = "CarlTech"
 	else:
@@ -53,8 +38,7 @@ def getPosition(col):
 
 	return position
 
-def getShiftTime(col, row):
-	#col = column_index_from_string(column)
+def getShiftTime(col, row): gets shift time given a certain cell.
 	day = ceil(col/2)
 	time = ""
 	if row > 30 and day < 5: #if we're at 6:00pm on Mon-Thur
